@@ -9,7 +9,7 @@ noWrap:true
 }).addTo(map);
 
 
-// 코인 시스템 (1초에 5코인)
+// 🪙 코인 시스템 (1초에 5개)
 
 let coins = 0;
 
@@ -19,9 +19,9 @@ document.getElementById("coins").innerText = coins;
 },1000);
 
 
-// 국가 데이터 불러오기
+// 🌍 나라 경계 불러오기
 
-fetch("countries.geojson")
+fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
 .then(res => res.json())
 .then(data => {
 
@@ -70,11 +70,11 @@ country.owner = nick;
 layer.setStyle({
 fillColor:"red",
 color:"red",
-fillOpacity:0.25
+fillOpacity:0.3
 });
 
 layer.bindPopup(
-feature.properties.name+
+feature.properties.name +
 "<br>Owner: "+nick+
 "<br>Next price: "+country.price
 ).openPopup();
