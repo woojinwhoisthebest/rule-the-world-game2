@@ -110,3 +110,4 @@ feature.properties.name +
 }).addTo(map);
 
 });
+const socket = io("https://rule-the-world-game2-production.up.railway.app")
