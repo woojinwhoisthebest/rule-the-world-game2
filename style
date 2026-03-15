@@ -10,3 +10,4 @@ body { margin:0; font-family:Arial; }
   z-index:1000;
 }
 #ranking { margin-top:10px; }
+input { padding:5px; font-size:14px; width:120px; }
