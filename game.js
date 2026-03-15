@@ -1,3 +1,25 @@
+function getPlayerColor(name){
+
+let colors = [
+"red",
+"blue",
+"green",
+"purple",
+"orange",
+"yellow",
+"cyan",
+"pink"
+];
+
+let hash = 0;
+
+for(let i=0;i<name.length;i++){
+hash += name.charCodeAt(i);
+}
+
+return colors[hash % colors.length];
+
+}
 var map = L.map('map',{
 worldCopyJump:false,
 maxBounds:[[-90,-180],[90,180]]
@@ -67,12 +89,14 @@ country.price += 2;
 
 country.owner = nick;
 
-layer.setStyle({
-fillColor:"red",
-color:"red",
-fillOpacity:0.3
-});
+let color = getPlayerColor(nick);
 
+layer.setStyle({
+fillColor:color,
+color:color,
+fillOpacity:0.35
+});
+  
 layer.bindPopup(
 feature.properties.name +
 "<br>Owner: "+nick+
