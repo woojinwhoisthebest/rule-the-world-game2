@@ -1,114 +1,58 @@
-const socket = io("https://rule-the-world-game2-production.up.railway.app")
-function getPlayerColor(name){
+<!DOCTYPE html>
+<html>
 
-let colors = [
-"red",
-"blue",
-"green",
-"purple",
-"orange",
-"yellow",
-"cyan",
-"pink"
-];
+<head>
 
-let hash = 0;
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-for(let i=0;i<name.length;i++){
-hash += name.charCodeAt(i);
+<title>Rule The World</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
 }
 
-return colors[hash % colors.length];
-
-}
-var map = L.map('map',{
-worldCopyJump:false,
-maxBounds:[[-90,-180],[90,180]]
-}).setView([20,0],2);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-maxZoom:19,
-noWrap:true
-}).addTo(map);
-
-
-// 🪙 코인 시스템 (1초에 5개)
-
-let coins = 0;
-
-setInterval(()=>{
-coins += 5;
-document.getElementById("coins").innerText = coins;
-},1000);
-
-
-// 🌍 나라 경계 불러오기
-
-fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
-.then(res => res.json())
-.then(data => {
-
-L.geoJSON(data,{
-
-style:function(){
-
-return{
-color:"blue",
-weight:1,
-fillColor:"blue",
-fillOpacity:0.15
-};
-
-},
-
-onEachFeature:function(feature,layer){
-
-let country = {
-owner:null,
-price:50
-};
-
-layer.on("click",function(){
-
-const nick = document.getElementById("nickname").value;
-
-if(!nick){
-alert("닉네임 입력하세요");
-return;
+#map{
+height:100vh;
 }
 
-if(coins < country.price){
-alert("필요 코인: "+country.price);
-return;
+#ui{
+position:absolute;
+top:10px;
+left:10px;
+background:white;
+padding:10px;
+border-radius:10px;
+z-index:1000;
 }
 
-coins -= country.price;
+</style>
 
-document.getElementById("coins").innerText = coins;
+</head>
 
-country.price += 2;
+<body>
 
-country.owner = nick;
+<div id="ui">
 
-let color = getPlayerColor(nick);
+<input id="nickname" placeholder="닉네임">
 
-layer.setStyle({
-fillColor:color,
-color:color,
-fillOpacity:0.35
-});
-  
-layer.bindPopup(
-feature.properties.name +
-"<br>Owner: "+nick+
-"<br>Next price: "+country.price
-).openPopup();
+<div>
+Coins: <span id="coins">0</span>
+</div>
 
-});
+</div>
 
-}
+<div id="map"></div>
 
-}).addTo(map);
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://rule-the-world-game2-production.up.railway.app/socket.io/socket.io.js"></script>
 
-});
+<script src="game.js"></script>
 
+</body>
+
+</html>
