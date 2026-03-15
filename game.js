@@ -19,64 +19,72 @@ document.getElementById("coins").innerText = coins;
 },3000);
 
 
-// 도시 생성
+// 세계 여러 지역 기준 좌표
 
-const baseCities = [
+const regions = [
 
-{name:"Tokyo",lat:35.6762,lng:139.6503},
-{name:"Seoul",lat:37.5665,lng:126.9780},
-{name:"Beijing",lat:39.9042,lng:116.4074},
-{name:"Bangkok",lat:13.7563,lng:100.5018},
-{name:"Singapore",lat:1.3521,lng:103.8198},
-{name:"Dubai",lat:25.2048,lng:55.2708},
-{name:"London",lat:51.5072,lng:-0.1276},
-{name:"Paris",lat:48.8566,lng:2.3522},
-{name:"Berlin",lat:52.52,lng:13.4050},
-{name:"Rome",lat:41.9028,lng:12.4964},
-{name:"New York",lat:40.7128,lng:-74.0060},
-{name:"Los Angeles",lat:34.0522,lng:-118.2437},
-{name:"Chicago",lat:41.8781,lng:-87.6298},
-{name:"Toronto",lat:43.6532,lng:-79.3832},
-{name:"Sydney",lat:-33.8688,lng:151.2093},
-{name:"Melbourne",lat:-37.8136,lng:144.9631},
-{name:"Cape Town",lat:-33.9249,lng:18.4241},
-{name:"Rio",lat:-22.9068,lng:-43.1729}
+[40,-100], // 북미
+[50,10], // 유럽
+[30,100], // 중국
+[20,78], // 인도
+[-10,-55], // 브라질
+[-25,135], // 호주
+[0,20], // 아프리카
+[35,140], // 일본
+[37,127], // 한국
+[25,45], // 중동
+[60,90], // 러시아
+[-34,-58], // 아르헨티나
+[15,-90], // 중앙아메리카
+[52,-110], // 캐나다
+[-1,120] // 인도네시아
+
 ];
 
 let cities = [];
 
-baseCities.forEach(base=>{
+// 지역마다 도시 생성
 
-for(let i=0;i<60;i++){
+regions.forEach(region=>{
 
-let lat = base.lat + (Math.random()*2-1);
-let lng = base.lng + (Math.random()*2-1);
+for(let i=0;i<70;i++){
+
+let lat = region[0] + (Math.random()*12-6);
+let lng = region[1] + (Math.random()*12-6);
 
 cities.push({
-name:base.name+"-"+i,
+
 lat:lat,
 lng:lng,
 owner:null,
 price:50
+
 });
 
 }
 
 });
 
+// 최대 1000개
+
 cities = cities.slice(0,1000);
 
 
-// 도시 표시
+// 도시 영역 생성
 
 cities.forEach(city=>{
 
-var marker = L.circleMarker([city.lat, city.lng],{
-radius:4,
-color:"red",
-fillColor:"red",
-fillOpacity:0.9
+var marker = L.circle([city.lat, city.lng],{
+
+radius:60000, // 영역 크기
+color:"blue",
+fillColor:"blue",
+fillOpacity:0.15, // 투명도
+
 }).addTo(map);
+
+
+// 클릭 범위 크게
 
 marker.on("click",function(){
 
@@ -87,37 +95,40 @@ alert("닉네임 입력하세요");
 return;
 }
 
-// 코인 부족
-
 if(coins < city.price){
-alert("코인이 부족합니다! 필요 코인: "+city.price);
+
+alert("코인이 부족합니다. 필요: "+city.price);
 return;
+
 }
 
-// 코인 차감
-
 coins -= city.price;
+
 document.getElementById("coins").innerText = coins;
+
 
 // 가격 상승
 
 city.price += 2;
 
-// 소유자 변경
-
 city.owner = nick;
 
-// 색 변경
+
+// 색상 변경
 
 marker.setStyle({
-color:"blue",
-fillColor:"blue"
+
+color:"red",
+fillColor:"red",
+fillOpacity:0.2
+
 });
 
 marker.bindPopup(
-city.name+
-"<br>Owner: "+nick+
+
+"Owner: "+nick+
 "<br>Next Price: "+city.price
+
 ).openPopup();
 
 });
