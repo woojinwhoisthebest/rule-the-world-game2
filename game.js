@@ -9,7 +9,7 @@ noWrap:true
 }).addTo(map);
 
 
-// 🪙 코인 시스템 (1초에 5개)
+// 코인 시스템 (1초에 5코인)
 
 let coins = 0;
 
@@ -19,55 +19,33 @@ document.getElementById("coins").innerText = coins;
 },1000);
 
 
-// 🌍 전세계 균등 도시 생성
+// 국가 데이터 불러오기
 
-let cities = [];
+fetch("countries.geojson")
+.then(res => res.json())
+.then(data => {
 
-let latStep = 8;
-let lngStep = 8;
+L.geoJSON(data,{
 
-for(let lat=-60; lat<=70; lat+=latStep){
+style:function(){
 
-for(let lng=-180; lng<=180; lng+=lngStep){
+return{
+color:"blue",
+weight:1,
+fillColor:"blue",
+fillOpacity:0.15
+};
 
-cities.push({
-lat:lat,
-lng:lng,
+},
+
+onEachFeature:function(feature,layer){
+
+let country = {
 owner:null,
 price:50
-});
+};
 
-}
-
-}
-
-cities = cities.slice(0,1000);
-
-
-// 🗺 영토 타일 생성
-
-cities.forEach(city=>{
-
-let size = 3; // 타일 크기
-
-let polygon = L.polygon([
-[city.lat-size, city.lng-size],
-[city.lat-size, city.lng+size],
-[city.lat+size, city.lng+size],
-[city.lat+size, city.lng-size]
-],{
-
-color:"blue",
-fillColor:"blue",
-fillOpacity:0.15,
-weight:1
-
-}).addTo(map);
-
-
-// 클릭
-
-polygon.on("click",function(){
+layer.on("click",function(){
 
 const nick = document.getElementById("nickname").value;
 
@@ -76,38 +54,35 @@ alert("닉네임 입력하세요");
 return;
 }
 
-if(coins < city.price){
-alert("필요 코인: "+city.price);
+if(coins < country.price){
+alert("필요 코인: "+country.price);
 return;
 }
 
-coins -= city.price;
+coins -= country.price;
 
 document.getElementById("coins").innerText = coins;
 
+country.price += 2;
 
-// 가격 상승
+country.owner = nick;
 
-city.price += 2;
-
-city.owner = nick;
-
-
-// 색 변경
-
-polygon.setStyle({
-
-color:"red",
+layer.setStyle({
 fillColor:"red",
+color:"red",
 fillOpacity:0.25
-
 });
 
-polygon.bindPopup(
-"Owner: "+nick+
-"<br>Next price: "+city.price
+layer.bindPopup(
+feature.properties.name+
+"<br>Owner: "+nick+
+"<br>Next price: "+country.price
 ).openPopup();
 
 });
+
+}
+
+}).addTo(map);
 
 });
