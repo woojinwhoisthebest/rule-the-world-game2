@@ -1,3 +1,50 @@
+// socket.io 서버 연결
+const socket = io("https://rule-the-world-game2-production.up.railway.app");
+
+// GeoJSON 불러오기
+fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+.then(res => res.json())
+.then(data => {
+  L.geoJSON(data, {
+    style: {
+      color: "blue",
+      weight: 1,
+      fillColor: "blue",
+      fillOpacity: 0.1
+    },
+    onEachFeature: function(feature, layer) {
+      const name = feature.properties.name;
+
+      layer.on("click", function() {
+        const nick = document.getElementById("nickname").value;
+        if (!nick) { alert("닉네임 입력"); return; }
+        if (coins < 50) { alert("코인 부족"); return; }
+
+        coins -= 50;
+        document.getElementById("coins").innerText = coins;
+
+        // 서버로 점령 요청 보내기
+        socket.emit("capture", { country: name, player: nick });
+      });
+
+      // 서버로부터 업데이트 받기
+      socket.on("update", (data) => {
+        if (data.countries[name]) {
+          const owner = data.countries[name].owner;
+          if (owner) {
+            layer.setStyle({
+              fillColor: getColor(owner),
+              color: getColor(owner),
+              fillOpacity: 0.35
+            });
+          } else {
+            layer.setStyle({ fillColor: "blue", color: "blue", fillOpacity: 0.1 });
+          }
+        }
+      });
+    }
+  }).addTo(map);
+});
 const socket = io("https://rule-the-world-game2-production.up.railway.app");
 
 var map = L.map('map').setView([20,0],2);
